@@ -12,3 +12,13 @@ https://techsmix.net/debian-stretch-btrfs/ outlines the setup process of an arra
 
 ## `array-unlock.sh`
 - Matches based on LuksUUID of drives looking up keys and attempting to decrypt with GPG 
+
+
+### Encrypting a new drive:
+
+```
+openssl rand -base64 2048 | gpg -q  --trust-model always --encrypt --sign --armor -r $ENCRYPTION_SUB_KEY_ID > ./luks-dev-sdX.key
+gpg -d ./luks-dev-sdX.key 2>/dev/null | cryptsetup -v --key-file=- --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-urandom luksFormat /dev/sdX
+```
+Ensure to update the backup tarball with the new key
+

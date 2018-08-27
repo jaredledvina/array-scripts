@@ -19,6 +19,13 @@ https://techsmix.net/debian-stretch-btrfs/ outlines the setup process of an arra
 ```
 openssl rand -base64 2048 | gpg -q  --trust-model always --encrypt --sign --armor -r $ENCRYPTION_SUB_KEY_ID > ./luks-dev-sdX.key
 gpg -d ./luks-dev-sdX.key 2>/dev/null | cryptsetup -v --key-file=- --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-urandom luksFormat /dev/sdX
+mv ./luks-dev-sdX.key $PATHTOKEYFOLDER/$(cryptsetup luksUUID /dev/sdX).gpg
+# Re-run ./array-unlock.sh to unlock the new drive
+btrfs device add /dev/mapper/luks_sdX /raid
+btrfs filesystem show
+btrfs balance start --background --verbose /raid
+btrfs balance status --verbose /raid
+# Wait like 3 days
 ```
 Ensure to update the backup tarball with the new key
 
